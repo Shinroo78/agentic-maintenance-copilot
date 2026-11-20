@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agentic Factory OS — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8fafc;--sf:#fff;--sa:#f1f5f9;--bd:#e2e8f0;--bds:#cbd5e1;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--pr:#2563eb;--prh:#1d4ed8;--prl:#dbeafe;--ok:#059669;--okl:#d1fae5;--wn:#d97706;--wnl:#fef3c7;--dn:#dc2626;--dnl:#fee2e2;--in:#7c3aed;--inl:#ede9fe;--r:6px;--rm:10px;--rl:14px;--fn:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--mo:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+svg.icon{flex-shrink:0;vertical-align:middle}
+header{background:var(--sf);border-bottom:1px solid var(--bd);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:36px;height:36px;border-radius:var(--rm);background:linear-gradient(135deg,#2563eb,#1d4ed8);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgb(37 99 235/.25)}
+.brand-mark svg{color:#fff}
+.brand h1{font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.brand p{font-size:11px;color:var(--tx3);margin-top:1px}
+.hstats{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.stat{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:500;background:var(--sa);border:1px solid var(--bd);color:var(--tx2)}
+.stat b{color:var(--tx);font-family:var(--mo);font-size:12px;font-weight:600}
+.stat .dot{width:6px;height:6px;border-radius:50%}
+.stat.ev .dot{background:var(--pr)}
+.stat.ex .dot{background:var(--ok)}
+.stat.pe .dot{background:var(--wn)}
+.stat.bl .dot{background:var(--dn)}
+.reset{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--bd);color:var(--tx2);padding:7px 14px;border-radius:var(--r);cursor:pointer;font-family:var(--fn);font-size:12px;font-weight:500;transition:all .15s}
+.reset:hover{background:var(--sa);color:var(--tx)}
+nav.tabs{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;overflow-x:auto;position:sticky;top:63px;z-index:99;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{background:transparent;border:none;cursor:pointer;padding:12px 10px;font-family:var(--fn);font-size:12.5px;font-weight:500;color:var(--tx2);display:inline-flex;align-items:center;gap:6px;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;margin-bottom:-1px}
+nav.tabs button:hover{color:var(--tx)}
+nav.tabs button.active{color:var(--pr);border-bottom-color:var(--pr)}
+nav.tabs button svg{opacity:.7}
+nav.tabs button.active svg,nav.tabs button:hover svg{opacity:1}
+main{max-width:1400px;margin:0 auto;padding:24px}
+section[data-tab-content]{display:none;animation:fi .25s ease}
+section[data-tab-content].active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2{font-size:16px;font-weight:600;margin:24px 0 12px;color:var(--tx);display:flex;align-items:center;gap:8px}
+h2:first-child{margin-top:0}
+h2 svg{color:var(--tx3)}
+h3{font-size:14px;font-weight:600;color:var(--tx)}
+.muted{color:var(--tx3);font-size:12px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgb(0 0 0/.04)}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.ch p{font-size:12px;color:var(--tx3)}
+.ch p strong{color:var(--tx2);font-weight:500}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cmp > div{padding:14px 16px;border-radius:var(--rm);font-size:12.5px;line-height:1.55}
+.cmp .mnl{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}
+.cmp .aut{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+.cmp .lbl{font-size:10px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.cmp .mnl .lbl{color:#991b1b}
+.cmp .aut .lbl{color:#166534}
+.banner{display:flex;align-items:center;gap:10px;background:var(--sa);border:1px solid var(--bd);border-radius:var(--rm);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--tx2);flex-wrap:wrap}
+.banner svg{color:var(--tx3)}
+.banner b{color:var(--tx)}
+.banner code{font-family:var(--mo);font-size:11px;background:var(--sf);padding:2px 6px;border-radius:4px;border:1px solid var(--bd);color:var(--tx2)}
+.banner .sep{color:var(--bds)}
+.tw{overflow-x:auto;margin:0 -18px -18px;padding:0 18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th{background:var(--sa);color:var(--tx2);font-weight:500;padding:10px 12px;text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--bd)}
+table td{padding:11px 12px;border-bottom:1px solid var(--bd);color:var(--tx2)}
+table tr:last-child td{border-bottom:none}
+table tbody tr{transition:background .12s}
+table tbody tr:hover{background:var(--sa)}
+table td b{color:var(--tx);font-weight:600}
+.mono{font-family:var(--mo);font-size:11.5px}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--pr);border:1px solid var(--pr);color:#fff;padding:7px 13px;border-radius:var(--r);cursor:pointer;font-family:var(--fn);font-size:12px;font-weight:500;transition:all .15s}
+.btn:hover{background:var(--prh);border-color:var(--prh)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-ok{background:var(--ok);border-color:var(--ok)}
+.btn-ok:hover{background:#047857;border-color:#047857}
+.btn-bad{background:#fff;border-color:var(--bds);color:var(--tx2)}
+.btn-bad:hover{background:var(--dnl);border-color:var(--dn);color:var(--dn)}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;background:var(--sa);color:var(--tx2);border:1px solid var(--bd);white-space:nowrap}
+.tag.ok{background:var(--okl);color:#065f46;border-color:#a7f3d0}
+.tag.warn{background:var(--wnl);color:#92400e;border-color:#fde68a}
+.tag.bad{background:var(--dnl);color:#991b1b;border-color:#fecaca}
+.tag.info{background:var(--inl);color:#5b21b6;border-color:#ddd6fe}
+.tag.primary{background:var(--prl);color:#1e40af;border-color:#bfdbfe}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.mc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rm);padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 1px 2px rgb(0 0 0/.04)}
+.mc:hover{border-color:var(--pr);transform:translateY(-2px);box-shadow:0 4px 6px rgb(0 0 0/.07)}
+.mc .iw{width:48px;height:48px;margin:0 auto 10px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;background:var(--prl);color:var(--pr)}
+.mc.motor .iw{background:var(--wnl);color:var(--wn)}
+.mc.press .iw{background:var(--inl);color:var(--in)}
+.mc .nm{font-size:13px;font-weight:600;margin-bottom:2px}
+.mc .mt{font-size:11px;color:var(--tx3);font-family:var(--mo)}
+.mc .st{display:inline-flex;align-items:center;gap:5px;margin-top:12px;padding:3px 10px;border-radius:999px;font-size:10.5px;font-weight:500;background:var(--okl);color:#065f46}
+.mc .st::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.mc.alarm{border-color:var(--dn);background:#fef2f2}
+.mc.alarm .st{background:var(--dnl);color:#991b1b}
+.mc.processing{border-color:var(--wn);background:#fffbeb}
+.mc.processing .st{background:var(--wnl);color:#92400e}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets button{display:inline-flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--bd);color:var(--tx2);padding:7px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--fn);font-size:12px;font-weight:500;transition:all .15s}
+.presets button:hover{border-color:var(--pr);color:var(--pr);background:var(--prl)}
+.pipeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+.stage{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rm);padding:12px;min-height:170px;transition:all .3s}
+.stage.empty-state{opacity:.6}
+.stage.active{border-color:var(--pr);box-shadow:0 0 0 3px rgb(37 99 235/.1)}
+.stage.done{border-color:#a7f3d0}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+.sn{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:var(--sa);color:var(--tx2)}
+.stage.active .sn{background:var(--pr);color:#fff}
+.stage.done .sn{background:var(--ok);color:#fff}
+.st{font-size:12px;font-weight:600;color:var(--tx)}
+.sc{font-size:12px;color:var(--tx2);line-height:1.55}
+.sc strong{color:var(--tx);font-weight:600}
+.sc .row{margin:4px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sc .quote{background:var(--sa);border-left:3px solid var(--pr);padding:8px 10px;margin:8px 0;font-size:11.5px;color:var(--tx2);border-radius:0 var(--r) var(--r) 0}
+.sc .quote .src{font-family:var(--mo);font-size:10.5px;color:var(--pr);font-weight:500;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.loading{display:inline-flex;gap:3px;margin-left:4px}
+.loading span{width:5px;height:5px;border-radius:50%;background:var(--pr);animation:db 1.2s infinite ease-in-out}
+.loading span:nth-child(2){animation-delay:.15s}
+.loading span:nth-child(3){animation-delay:.3s}
+@keyframes db{0%,80%,100%{transform:scale(.4);opacity:.4}40%{transform:scale(1);opacity:1}}
+.fp{background:var(--sa);border:1px solid var(--bd);border-radius:var(--rm);padding:12px;margin-top:12px}
+.fs{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12px;gap:10px}
+.fs:not(:last-child){border-bottom:1px dashed var(--bd)}
+.fs .num{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--pr);color:#fff;font-size:10px;font-weight:600;margin-right:8px}
+.ap{background:var(--sf);border:1px solid var(--wn);border-radius:var(--rm);padding:12px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;transition:all .2s}
+.ap.approved{border-color:var(--ok);background:#f0fdf4}
+.ap.rejected{border-color:var(--dn);background:#fef2f2}
+.ap .info{flex:1;min-width:200px}
+.ap .info b{display:block;color:var(--tx);font-size:12.5px;margin-bottom:2px}
+.ap .info small{display:block;color:var(--tx3);font-size:11px}
+.ap .btns{display:flex;gap:6px}
+.si{background:var(--dnl);border:1px solid #fecaca;border-radius:var(--rm);padding:12px 14px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:#7f1d1d}
+.si svg{color:var(--dn);flex-shrink:0;margin-top:1px}
+.si b{font-weight:600}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.sb{background:var(--sf);border:1px solid var(--bd);color:var(--tx);padding:12px 14px;border-radius:var(--rm);cursor:pointer;text-align:left;font-family:var(--fn);font-size:12px;transition:all .15s;display:flex;align-items:center;gap:10px}
+.sb:hover{background:var(--dnl);border-color:var(--dn);color:#991b1b;transform:translateY(-1px);box-shadow:0 2px 4px rgb(0 0 0/.06)}
+.sb .ic{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--dnl);color:var(--dn);flex-shrink:0;transition:all .15s}
+.sb:hover .ic{background:var(--dn);color:#fff}
+.sb .lbl b{display:block;color:var(--tx);font-size:12px;margin-bottom:1px}
+.sb:hover .lbl b{color:#991b1b}
+.sb .lbl span{color:var(--tx3);font-size:11px}
+.sb:hover .lbl span{color:#b91c1c}
+.sr{margin-top:12px;padding:12px 14px;background:var(--dnl);border:1px solid #fecaca;border-radius:var(--rm);font-size:12.5px;color:#7f1d1d;display:none}
+.sr.show{display:block;animation:fi .25s ease}
+.sr .hd{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:6px;color:#991b1b}
+.sr .rs{color:#7f1d1d;margin-bottom:6px}
+.sr .ft{font-size:11px;color:#991b1b;opacity:.8}
+.es{text-align:center;padding:32px 16px;color:var(--tx3)}
+.es svg{color:var(--bds);margin-bottom:8px}
+.es p{font-size:12.5px}
+.aw{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;box-shadow:0 1px 2px rgb(0 0 0/.04);max-height:640px;overflow-y:auto}
+.audit{width:100%;border-collapse:collapse;font-size:12px}
+.audit th{position:sticky;top:0;background:var(--sa);z-index:1}
+.audit td{padding:10px 12px;font-size:12px}
+.qd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.qd.good{background:var(--ok)}
+.qd.bad{background:var(--dn)}
+.qd.uncertain{background:var(--wn)}
+.bbar{height:6px;border-radius:3px;background:var(--sa);overflow:hidden;margin-top:4px}
+.bbar > div{height:100%;background:var(--pr);transition:width .3s}
+.bbar > div.warn{background:var(--wn)}
+.bbar > div.danger{background:var(--dn)}
+.hd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.hd.green{background:var(--ok)}
+.hd.amber{background:var(--wn)}
+.hd.red{background:var(--dn)}
+.wp{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.03em}
+.wp.p1{background:#fee2e2;color:#991b1b}
+.wp.p2{background:#fef3c7;color:#92400e}
+.wp.p3{background:#dbeafe;color:#1e40af}
+.rt{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.rs2{display:flex;gap:12px;padding:10px 12px;background:var(--sa);border-radius:var(--r);border-left:3px solid var(--pr);font-size:12px}
+.rs2.ok{border-left-color:var(--ok)}
+.rs2.warn{border-left-color:var(--wn)}
+.rs2.bad{border-left-color:var(--dn)}
+.rs2 .sl{font-weight:600;color:var(--tx);min-width:110px;font-family:var(--mo);font-size:11px}
+.rs2 .sb2{flex:1;color:var(--tx2)}
+input[type=text]{background:var(--sa);border:1px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-family:var(--fn);font-size:12.5px;color:var(--tx);outline:none;flex:1}
+input[type=text]:focus{border-color:var(--pr)}
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rm);padding:12px 14px;box-shadow:0 1px 2px rgb(0 0 0/.04)}
+.kpi .kl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kpi .kv{font-size:22px;font-weight:700;font-family:var(--mo);margin-top:2px;color:var(--tx)}
+@media(max-width:768px){header{padding:10px 14px}.hstats{display:none}nav.tabs{padding:0 12px;top:56px}nav.tabs button{padding:12px 8px;font-size:12px}nav.tabs button span{display:none}main{padding:16px}.cmp{grid-template-columns:1fr}.fg,.pipeline{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="i-factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20V9l5 3V9l5 3V9l5 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z"/><path d="M17 9V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v14"/><path d="M9 20v-4"/><path d="M13 20v-4"/></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h7l-3 7 12-11h-7l3-7-12 11Z"/></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+<symbol id="i-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol>
+<symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+<symbol id="i-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
+<symbol id="i-shield-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-alert-triangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+<symbol id="i-book-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+<symbol id="i-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
+<symbol id="i-ban" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="i-file-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+<symbol id="i-trending-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+<symbol id="i-radio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></symbol>
+</svg>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark"><svg width="20" height="20" class="icon"><use href="#i-factory"/></svg></div>
+    <div><h1>Agentic Factory OS</h1><p>Maintenance · SCADA · ERP · CRM · HR · RAG · CMMS</p></div>
+  </div>
+  <div class="hstats">
+    <span class="stat ev"><span class="dot"></span><b id="st-events">0</b> events</span>
+    <span class="stat ex"><span class="dot"></span><b id="st-auto">0</b> executed</span>
+    <span class="stat pe"><span class="dot"></span><b id="st-holds">0</b> pending</span>
+    <span class="stat bl"><span class="dot"></span><b id="st-blocked">0</b> blocked</span>
+  </div>
+  <button class="reset" onclick="resetAll()"><svg width="14" height="14" class="icon"><use href="#i-refresh"/></svg> Reset</button>
+</header>
+
+<nav class="tabs">
+  <button data-tab="factory" class="active"><svg width="15" height="15" class="icon"><use href="#i-factory"/></svg><span>Factory</span></button>
+  <button data-tab="scada"><svg width="15" height="15" class="icon"><use href="#i-monitor"/></svg><span>SCADA</span></button>
+  <button data-tab="erp"><svg width="15" height="15" class="icon"><use href="#i-building"/></svg><span>ERP</span></button>
+  <button data-tab="procurement"><svg width="15" height="15" class="icon"><use href="#i-cart"/></svg><span>Procurement</span></button>
+  <button data-tab="sales"><svg width="15" height="15" class="icon"><use href="#i-receipt"/></svg><span>Sales</span></button>
+  <button data-tab="crm"><svg width="15" height="15" class="icon"><use href="#i-users"/></svg><span>CRM</span></button>
+  <button data-tab="hr"><svg width="15" height="15" class="icon"><use href="#i-user"/></svg><span>HR</span></button>
+  <button data-tab="inventory"><svg width="15" height="15" class="icon"><use href="#i-package"/></svg><span>Inventory</span></button>
+  <button data-tab="rag"><svg width="15" height="15" class="icon"><use href="#i-database"/></svg><span>RAG</span></button>
+  <button data-tab="cmms"><svg width="15" height="15" class="icon"><use href="#i-wrench"/></svg><span>CMMS</span></button>
+  <button data-tab="safety"><svg width="15" height="15" class="icon"><use href="#i-shield-alert"/></svg><span>Safety</span></button>
+  <button data-tab="audit"><svg width="15" height="15" class="icon"><use href="#i-clipboard"/></svg><span>Audit</span></button>
+</nav>
+
+<main>
+
+<section data-tab-content="factory" class="active">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-factory"/></svg> Factory Floor · Line L1</h2>
+  <div class="fg" id="factory"></div>
+  <h2 style="margin-top:28px"><svg width="18" height="18" class="icon"><use href="#i-play"/></svg> Quick Scenarios</h2>
+  <div class="presets">
+    <button onclick="triggerIncident('PUMP-01','high')"><svg width="14" height="14" class="icon"><use href="#i-alert-triangle"/></svg> Pump bearing temp 92°C</button>
+    <button onclick="triggerIncident('MOTOR-02','high')"><svg width="14" height="14" class="icon"><use href="#i-alert-triangle"/></svg> Motor vibration 8.2 mm/s</button>
+    <button onclick="triggerIncident('PRESS-03','high')"><svg width="14" height="14" class="icon"><use href="#i-alert-triangle"/></svg> Press pressure 105 bar</button>
+    <button onclick="triggerIncident('PUMP-01','bad')"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg> Unreliable reading (BAD)</button>
+  </div>
+  <h2 style="margin-top:28px"><svg width="18" height="18" class="icon"><use href="#i-arrow-right"/></svg> Processing Pipeline</h2>
+  <div class="pipeline" id="pipeline"></div>
+</section>
+
+<section data-tab-content="scada">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-monitor"/></svg> SCADA · Read-only OT Telemetry</h2>
+  <div class="banner"><svg width="14" height="14" class="icon"><use href="#i-lock"/></svg><span><b>Mode:</b> <code>OPC UA subscription</code> <span class="sep">·</span> <b>READ:</b> allowed <span class="sep">·</span> <b>WRITE:</b> prohibited (L3)</span></div>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Operator watches hundreds of SCADA alarms, misses the critical one, alarm floods every few minutes.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>AFOS subscribes read-only, deduplicates, correlates, and hands off to the reasoning layer. No write path exists.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Live Signals</h3><p><strong>6</strong> tags · read-only</p></div>
+    <div class="tw"><table id="scada-signals"><thead><tr><th>Tag</th><th>Value</th><th>Quality</th><th>Status</th><th>Trend</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Active Alarms</h3><p><strong id="scada-alarm-count">3</strong> active · <span id="scada-raw-count">12</span> raw/min</p></div>
+    <div class="tw"><table id="scada-alarms"><thead><tr><th>Alarm</th><th>Tag</th><th>Severity</th><th>Time</th><th>State</th></tr></thead><tbody></tbody></table></div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="scadaDedupe()"><svg width="14" height="14" class="icon"><use href="#i-radio"/></svg> Dedupe Alarm Flood</button>
+      <button class="btn btn-bad" onclick="scadaAttemptWrite()"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg> Attempt SCADA Write</button>
+    </div>
+    <div id="scada-result" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section data-tab-content="erp">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-building"/></svg> ERP · Financial Context</h2>
+  <div class="banner"><svg width="14" height="14" class="icon"><use href="#i-lock"/></svg><span><b>Mode:</b> <code>BAPI / OData</code> <span class="sep">·</span> <b>READ:</b> allowed <span class="sep">·</span> <b>WRITE:</b> draft-only (L2)</span></div>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Finance gets maintenance costs days later, reconciles by hand, discovers overruns after month-end.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>AFOS reads the cost center, checks budget, drafts the journal entry. Finance approves before posting.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Cost Centers</h3><p>Budget usage</p></div>
+    <div class="tw"><table id="erp-costs"><thead><tr><th>Code</th><th>Name</th><th>Budget</th><th>Spent</th><th>Usage</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Journal Entries</h3><p>Draft first, approve to post</p></div>
+    <div class="tw"><table id="erp-journal"><thead><tr><th>Entry</th><th>Cost Center</th><th>Amount</th><th>Description</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="erpProcessBooking()"><svg width="14" height="14" class="icon"><use href="#i-dollar"/></svg> Process Cost Booking</button>
+    </div>
+    <div id="erp-result" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section data-tab-content="procurement">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-cart"/></svg> Procurement · From Shortage to PO</h2>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Buyer manually checks stock, calls suppliers, writes requisition, emails it, chases approvals informally.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>System detects shortage, drafts requisition (L1), requests human approval for PO (L2). Every step audited.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Spare Parts Status</h3><p>Stock vs minimum</p></div>
+    <div class="tw"><table id="parts-table"><thead><tr><th>Part</th><th>Description</th><th>Stock</th><th>Min</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card" id="proc-result-card" style="display:none"><h3 style="margin-bottom:10px">Result</h3><div id="proc-result"></div></div>
+</section>
+
+<section data-tab-content="sales">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-receipt"/></svg> Sales · From Order to Delivery</h2>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Rep takes order, checks stock manually, calls warehouse, writes delivery order, follows up by phone.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>System checks availability, proposes full/partial delivery, drafts order, requests approval.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Open Orders</h3><p>Awaiting processing</p></div>
+    <div class="tw"><table id="sales-table"><thead><tr><th>Order</th><th>Customer</th><th>Product</th><th>Qty</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card" id="sales-result-card" style="display:none"><h3 style="margin-bottom:10px">Result</h3><div id="sales-result"></div></div>
+</section>
+
+<section data-tab-content="crm">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-users"/></svg> CRM · Customer Context</h2>
+  <div class="banner"><svg width="14" height="14" class="icon"><use href="#i-lock"/></svg><span><b>Mode:</b> <code>CRM REST API</code> <span class="sep">·</span> <b>READ:</b> allowed <span class="sep">·</span> <b>WRITE:</b> draft-only (L2)</span></div>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Rep digs through emails to answer a complaint, writes rushed response, forgets to log in CRM.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>AFOS reads order history & tickets, drafts context-aware response, queues for approval.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Customer Accounts</h3><p>3 active</p></div>
+    <div class="tw"><table id="crm-customers"><thead><tr><th>Customer</th><th>Segment</th><th>Health</th><th>Open Orders</th><th>YTD Value</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Recent Interactions</h3><p>Complaints, orders, tickets</p></div>
+    <div class="tw"><table id="crm-interactions"><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Summary</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="crmDraftResponse()"><svg width="14" height="14" class="icon"><use href="#i-mail"/></svg> Draft Response</button>
+    </div>
+    <div id="crm-result" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section data-tab-content="hr">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-user"/></svg> HR · Employees, Payroll & Procedures</h2>
+  <div class="banner"><svg width="14" height="14" class="icon"><use href="#i-lock"/></svg><span><b>Mode:</b> <code>HRIS REST API</code> <span class="sep">·</span> <b>READ:</b> allowed <span class="sep">·</span> <b>HIRING/PAYROLL:</b> draft (L2) <span class="sep">·</span> <b>TERMINATE/SALARY:</b> prohibited (L3)</span></div>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>HR spends days on hiring paperwork, payroll errors go unnoticed until month-end, terminations filed without audit trail, role changes tracked in spreadsheets.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>AFOS drafts hiring records (L2), calculates payroll (L1+L2), tracks every employee and department, and <b>refuses to terminate or change salaries autonomously</b>.</div>
+  </div>
+  <div class="kg">
+    <div class="kpi"><div class="kl">Headcount</div><div class="kv" id="hr-headcount">0</div></div>
+    <div class="kpi"><div class="kl">Monthly Payroll</div><div class="kv" id="hr-payroll-total">$0</div></div>
+    <div class="kpi"><div class="kl">Departments</div><div class="kv" id="hr-depts">0</div></div>
+    <div class="kpi"><div class="kl">Pending Drafts</div><div class="kv" id="hr-drafts">0</div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Employee Directory</h3><p><strong id="hr-count">0</strong> active employees</p></div>
+    <div class="tw"><table id="hr-employees"><thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Dept</th><th>Hired</th><th>Salary</th><th>Rating</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>HR Operations</h3><p>Hiring, payroll, or leave</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="hrOpenHiring()"><svg width="14" height="14" class="icon"><use href="#i-user"/></svg> Start Hiring</button>
+      <button class="btn" onclick="hrCalculatePayroll()"><svg width="14" height="14" class="icon"><use href="#i-dollar"/></svg> Calculate Payroll</button>
+    </div>
+    <div id="hr-result" style="margin-top:12px"></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Prohibited HR Actions</h3><p>Must always be rejected by Policy Engine</p></div>
+    <div class="sg">
+      <button class="sb" onclick="hrAttemptProhibited('terminate')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Automatic Termination</b><span>Fire without HR sign-off</span></div></button>
+      <button class="sb" onclick="hrAttemptProhibited('salary_change')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Automatic Salary Change</b><span>Modify compensation autonomously</span></div></button>
+      <button class="sb" onclick="hrAttemptProhibited('promote')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Automatic Promotion</b><span>Change role without review</span></div></button>
+    </div>
+    <div class="sr" id="hr-prohibited-result"></div>
+  </div>
+</section>
+
+<section data-tab-content="inventory">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-package"/></svg> Inventory · ABC & Operations</h2>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Paper count, unlogged adjustments, verbal transfers, no ABC.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>ABC classification, cycle counts, discrepancy approval, warehouse transfers with audit.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>ABC Classification</h3><p>A critical · B medium · C normal</p></div>
+    <div class="tw"><table><thead><tr><th>Part</th><th>Description</th><th>Stock</th><th>Value</th><th>Class</th><th>Warehouse</th></tr></thead><tbody id="abc-table-body"></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Operations</h3><p>Cycle count or transfer</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="startCycleCount()"><svg width="14" height="14" class="icon"><use href="#i-clipboard"/></svg> Cycle Count</button>
+      <button class="btn" onclick="startTransfer()"><svg width="14" height="14" class="icon"><use href="#i-arrow-right"/></svg> Warehouse Transfer</button>
+    </div>
+    <div id="inv-result" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section data-tab-content="rag">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-database"/></svg> RAG · Knowledge Base</h2>
+  <div class="banner"><svg width="14" height="14" class="icon"><use href="#i-lock"/></svg><span><b>Mode:</b> <code>Hybrid RAG</code> <span class="sep">·</span> <b>READ:</b> ACTIVE docs only <span class="sep">·</span> <b>WRITE:</b> admin-only</span></div>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Engineer searches folders, finds outdated manual, applies wrong procedure, no citation.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>Metadata pre-filter (ACTIVE only), rerank, citation verification, abstention if no active source.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Document Library</h3><p>Lifecycle-managed</p></div>
+    <div class="tw"><table id="rag-docs"><thead><tr><th>ID</th><th>Title</th><th>Asset Class</th><th>Status</th><th>Effective</th><th>Claims</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Retrieval Simulator</h3><p>Full RAG trace</p></div>
+    <div class="presets" style="margin-bottom:10px">
+      <button onclick="ragSearch('bearing temperature threshold P-200')"><svg width="14" height="14" class="icon"><use href="#i-search"/></svg> Bearing temp P-200</button>
+      <button onclick="ragSearch('vibration limit motor M-100')"><svg width="14" height="14" class="icon"><use href="#i-search"/></svg> Vibration M-100</button>
+      <button onclick="ragSearch('torque spec XYZ-9000')"><svg width="14" height="14" class="icon"><use href="#i-search"/></svg> XYZ-9000 (abstain)</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input id="rag-input" type="text" placeholder="Type a query...">
+      <button class="btn" onclick="ragSearch(document.getElementById('rag-input').value)"><svg width="14" height="14" class="icon"><use href="#i-search"/></svg> Search</button>
+    </div>
+    <div id="rag-result" style="margin-top:12px"><div class="es"><svg width="32" height="32" class="icon"><use href="#i-search"/></svg><p>Run a query to see the retrieval trace.</p></div></div>
+  </div>
+</section>
+
+<section data-tab-content="cmms">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-wrench"/></svg> CMMS · Work Orders</h2>
+  <div class="banner"><svg width="14" height="14" class="icon"><use href="#i-lock"/></svg><span><b>Mode:</b> <code>CMMS REST API</code> <span class="sep">·</span> <b>READ:</b> allowed <span class="sep">·</span> <b>WRITE:</b> draft-only (L2)</span></div>
+  <div class="cmp">
+    <div class="mnl"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-user"/></svg> Today · Manual</div>Technician gets alarm, writes work order on paper, forgets history, misses PM windows.</div>
+    <div class="aut"><div class="lbl"><svg width="12" height="12" class="icon"><use href="#i-bot"/></svg> With AFOS</div>AFOS drafts WO from diagnosis, links to PM schedule & history, holds P1 for approval.</div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Preventive Maintenance</h3><p>Schedule per asset</p></div>
+    <div class="tw"><table id="cmms-pm"><thead><tr><th>Asset</th><th>Model</th><th>Last PM</th><th>Next PM</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Work Orders</h3><p><strong id="cmms-wo-count">0</strong> open</p></div>
+    <div class="tw"><table id="cmms-work-orders"><thead><tr><th>WO #</th><th>Asset</th><th>Priority</th><th>Description</th><th>Age</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Operations</h3><p>Draft or attempt prohibited</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="cmmsDraftFromAlarm()"><svg width="14" height="14" class="icon"><use href="#i-file-text"/></svg> Draft WO from Alarm</button>
+      <button class="btn btn-bad" onclick="cmmsAttemptProhibited('auto_close')"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg> Attempt Auto-Close P1</button>
+      <button class="btn btn-bad" onclick="cmmsAttemptProhibited('delete_record')"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg> Attempt Delete Record</button>
+    </div>
+    <div id="cmms-result" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section data-tab-content="safety">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-shield-alert"/></svg> Safety · Prohibited Actions</h2>
+  <div class="si"><svg width="18" height="18" class="icon"><use href="#i-alert-triangle"/></svg><div>These actions must be rejected <b>100%</b> by the deterministic Policy Engine — regardless of model confidence.</div></div>
+  <div class="card">
+    <div class="sg">
+      <button class="sb" onclick="testProhibited('plc_write')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>PLC Write</b><span>Modify industrial controller register</span></div></button>
+      <button class="sb" onclick="testProhibited('setpoint')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Setpoint Change</b><span>Modify operational setpoint</span></div></button>
+      <button class="sb" onclick="testProhibited('start_stop')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Start / Stop</b><span>Direct control command</span></div></button>
+      <button class="sb" onclick="testProhibited('auto_po')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Automatic PO</b><span>Without human approval</span></div></button>
+      <button class="sb" onclick="testProhibited('auto_schedule')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Auto Schedule</b><span>Without human approval</span></div></button>
+      <button class="sb" onclick="testProhibited('write_off')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Stock Write-Off</b><span>Adjustment without approval</span></div></button>
+      <button class="sb" onclick="testProhibited('price_change')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Price Change</b><span>Commercial change</span></div></button>
+      <button class="sb" onclick="testProhibited('supplier_add')"><div class="ic"><svg width="14" height="14" class="icon"><use href="#i-ban"/></svg></div><div class="lbl"><b>Supplier Addition</b><span>Without verification</span></div></button>
+    </div>
+    <div class="sr" id="safety-result"></div>
+  </div>
+</section>
+
+<section data-tab-content="audit">
+  <h2><svg width="18" height="18" class="icon"><use href="#i-clipboard"/></svg> Unified Audit Log</h2>
+  <div class="aw">
+    <table class="audit">
+      <thead><tr><th>#</th><th>Time</th><th>Module</th><th>Action</th><th>Level</th><th>Decision</th><th>Actor</th><th>Note</th></tr></thead>
+      <tbody id="audit-body"><tr><td colspan="8"><div class="es"><svg width="32" height="32" class="icon"><use href="#i-clipboard"/></svg><p>No log yet — try any scenario.</p></div></td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const nowTime=()=>new Date().toLocaleTimeString('en-GB',{hour12:false});
+const fmt=n=>n.toLocaleString('en-US');
+const icon=(name,size=14)=>`<svg width="${size}" height="${size}" class="icon"><use href="#i-${name}"/></svg>`;
+const tag=(t,c='')=>`<span class="tag ${c}">${t}</span>`;
+const loading=()=>`<span class="loading"><span></span><span></span><span></span></span>`;
+
+const MACHINES={'PUMP-01':{icon:'cog',v:'',name:'Feed Pump',model:'P-200',crit:'A',signal:'bearing_temperature'},'MOTOR-02':{icon:'zap',v:'motor',name:'Conveyor Motor',model:'M-100',crit:'B',signal:'vibration'},'PRESS-03':{icon:'wrench',v:'press',name:'Hydraulic Press',model:'H-500',crit:'A',signal:'hydraulic_pressure'}};
+const KB={'PUMP-01':{doc_id:'DOC-PUMP-BRG-01',rule:v=>v>85,hyp:'Lubrication degradation in the main bearing',quote:'When bearing temperature exceeds 85°C, lubrication degradation is suspected; check oil level and replace bearing BRG-6205.',part:'BRG-6205',eta:90},'MOTOR-02':{doc_id:'DOC-MOTOR-VIB-01',rule:v=>v>7.1,hyp:'Misalignment or coupling wear',quote:'Vibration above 7.1 mm/s indicates misalignment or coupling wear; inspect COUPLING-01.',part:'COUPLING-01',eta:120},'PRESS-03':{doc_id:'DOC-PRESS-HYD-01',rule:v=>v<120,hyp:'Hydraulic seal leakage',quote:'Hydraulic pressure below 120 bar indicates seal leakage; inspect SEAL-MECH-22.',part:'SEAL-MECH-22',eta:180}};
+const PARTS0={'BRG-6205':{name:'Ball Bearing 6205',unit:'pcs',stock:4,min:5,max:20,price:45,wh:'WH-A'},'COUPLING-01':{name:'Flexible Coupling',unit:'pcs',stock:0,min:3,max:10,price:120,wh:'WH-A'},'SEAL-MECH-22':{name:'Mechanical Seal',unit:'pcs',stock:2,min:4,max:12,price:85,wh:'WH-B'},'OIL-ISO46':{name:'Hydraulic Oil ISO46',unit:'L',stock:80,min:20,max:100,price:8,wh:'WH-A'}};
+const SUPPLIERS={'BRG-6205':{name:'United Bearings Co.',lead:3},'COUPLING-01':{name:'Power Transmission Ltd.',lead:7},'SEAL-MECH-22':{name:'Industrial Seals Supply',lead:5},'OIL-ISO46':{name:'Industrial Oils Supply',lead:2}};
+const PRODS={'PROD-A':{name:'Industrial Pump Assembly',stock:45},'PROD-B':{name:'Hydraulic Press Assembly',stock:12},'PROD-C':{name:'Gearbox Assembly',stock:8}};
+const ORDERS0=[{id:'SO-2001',customer:'Delta Manufacturing',product:'PROD-A',qty:50,due:'2026-11-25',status:'PENDING'},{id:'SO-2002',customer:'Nile Industrial Group',product:'PROD-B',qty:30,due:'2026-11-27',status:'PENDING'},{id:'SO-2003',customer:'Delta Manufacturing',product:'PROD-C',qty:15,due:'2026-11-30',status:'PENDING'}];
+const SCADA0={signals:[{tag:'L1.PUMP-01.BEARING_TEMP',value:92.4,unit:'°C',quality:'GOOD',status:'HIGH',trend:'up'},{tag:'L1.PUMP-01.VIBRATION',value:3.2,unit:'mm/s',quality:'GOOD',status:'NORMAL',trend:'flat'},{tag:'L1.MOTOR-02.VIBRATION',value:8.2,unit:'mm/s',quality:'GOOD',status:'HIGH',trend:'up'},{tag:'L1.MOTOR-02.CURRENT',value:14.8,unit:'A',quality:'GOOD',status:'NORMAL',trend:'flat'},{tag:'L1.PRESS-03.HYD_PRESS',value:105,unit:'bar',quality:'GOOD',status:'LOW',trend:'down'},{tag:'L1.PRESS-03.OIL_TEMP',value:48.2,unit:'°C',quality:'GOOD',status:'NORMAL',trend:'flat'}],alarms:[{id:'ALM-4501',tag:'L1.PUMP-01.BEARING_TEMP',severity:'HIGH',time:'08:12:04',state:'ACTIVE'},{id:'ALM-4502',tag:'L1.MOTOR-02.VIBRATION',severity:'HIGH',time:'08:15:22',state:'ACTIVE'},{id:'ALM-4503',tag:'L1.PRESS-03.HYD_PRESS',severity:'MEDIUM',time:'08:18:10',state:'ACTIVE'}],rawCount:12};
+const ERP0={costs:[{code:'CC-MNT-01',name:'Maintenance',budget:120000,spent:84200},{code:'CC-PRC-01',name:'Procurement',budget:250000,spent:187400},{code:'CC-PRD-01',name:'Production L1',budget:800000,spent:612800}],journal:[]};
+const CRM0={customers:[{id:'CUST-100',name:'Delta Manufacturing',segment:'Enterprise',health:'GREEN',openOrders:2,ytd:245000},{id:'CUST-101',name:'Nile Industrial Group',segment:'Enterprise',health:'AMBER',openOrders:1,ytd:128000},{id:'CUST-102',name:'Suez Systems',segment:'Mid-Market',health:'GREEN',openOrders:0,ytd:64000}],interactions:[{id:'INT-001',customer:'CUST-100',type:'Order',summary:'SO-2001 · 50 × PROD-A',status:'OPEN'},{id:'INT-002',customer:'CUST-101',type:'Complaint',summary:'Late delivery on last batch',status:'OPEN'},{id:'INT-003',customer:'CUST-100',type:'Ticket',summary:'Installation question',status:'CLOSED'}]};
+const RAG0={docs:[{id:'DOC-PUMP-BRG-01',title:'P-200 Bearing Manual',ac:'centrifugal_pump',status:'ACTIVE',eff:'2024-01-15',claims:12},{id:'DOC-PUMP-BRG-00',title:'P-200 Bearing (OLD)',ac:'centrifugal_pump',status:'SUPERSEDED',eff:'2020-06-01',claims:9},{id:'DOC-MOTOR-VIB-01',title:'M-100 Vibration Guide',ac:'induction_motor',status:'ACTIVE',eff:'2023-08-20',claims:15},{id:'DOC-PRESS-HYD-01',title:'H-500 Hydraulic Manual',ac:'hydraulic_press',status:'ACTIVE',eff:'2024-03-10',claims:8},{id:'DOC-GEN-SAFE-01',title:'General Safety',ac:'all',status:'ACTIVE',eff:'2022-01-01',claims:24},{id:'DOC-PUMP-DRAFT',title:'P-200 Draft Update',ac:'centrifugal_pump',status:'DRAFT',eff:null,claims:3}]};
+const CMMS0={workOrders:[{id:'WO-7001',asset:'PUMP-01',priority:'P1',description:'Bearing temperature high — replace BRG-6205',age:'2h',status:'DRAFT'},{id:'WO-7002',asset:'MOTOR-02',priority:'P2',description:'Scheduled inspection — vibration check',age:'1d',status:'APPROVED'},{id:'WO-7003',asset:'PRESS-03',priority:'P2',description:'Hydraulic seal inspection',age:'3d',status:'IN_PROGRESS'}],pm:[{asset:'PUMP-01',model:'P-200',last:'2026-10-09',next:'2026-12-09',status:'OK'},{asset:'MOTOR-02',model:'M-100',last:'2026-10-15',next:'2026-11-22',status:'DUE_SOON'},{asset:'PRESS-03',model:'H-500',last:'2026-08-20',next:'2026-11-20',status:'OVERDUE'}]};
+const HR0={employees:[{id:'EMP-1001',name:'Sarah Chen',role:'Maintenance Engineer',dept:'Maintenance',hired:'2022-03-15',salary:8500,status:'ACTIVE',rating:4.5},{id:'EMP-1002',name:'Ahmed Hassan',role:'Production Supervisor',dept:'Production',hired:'2021-08-01',salary:7200,status:'ACTIVE',rating:4.2},{id:'EMP-1003',name:'Maria Rodriguez',role:'Procurement Specialist',dept:'Procurement',hired:'2023-01-10',salary:6500,status:'ACTIVE',rating:4.7},{id:'EMP-1004',name:'John Smith',role:'Sales Manager',dept:'Sales',hired:'2020-06-20',salary:9500,status:'ACTIVE',rating:4.8},{id:'EMP-1005',name:'Fatima Al-Zahra',role:'Finance Analyst',dept:'Finance',hired:'2023-09-05',salary:7000,status:'ACTIVE',rating:4.3},{id:'EMP-1006',name:'Omar Khalil',role:'Controls Engineer',dept:'Engineering',hired:'2022-11-12',salary:8800,status:'ACTIVE',rating:4.6},{id:'EMP-1007',name:'Lisa Wong',role:'HR Coordinator',dept:'HR',hired:'2024-02-01',salary:5800,status:'ON_LEAVE',rating:4.0}],drafts:[]};
+
+const PROHIBITED={plc_write:{label:'PLC Register Write',reason:'Prohibited — no write path from Layer 2 to PLC.'},setpoint:{label:'Setpoint Change',reason:'Prohibited — requires independent functional safety analysis.'},start_stop:{label:'Start/Stop Command',reason:'Prohibited — not part of the functional safety loop.'},auto_po:{label:'Automatic Supplier PO',reason:'Prohibited — only requisition draft with approval allowed.'},auto_schedule:{label:'Automatic Schedule Change',reason:'Prohibited — only simulated replanning allowed.'},write_off:{label:'Automatic Stock Write-Off',reason:'Prohibited — inventory adjustments require approval.'},price_change:{label:'Automatic Price Change',reason:'Prohibited — pricing requires commercial approval.'},supplier_add:{label:'Automatic Supplier Addition',reason:'Prohibited — supplier addition requires verification.'}};
+const CMMS_PROHIBITED={auto_close:{label:'Auto-Close Critical WO',reason:'Prohibited — closing a P1 WO requires human sign-off with evidence.'},delete_record:{label:'Delete Maintenance Record',reason:'Prohibited — maintenance records are append-only.'}};
+const HR_PROHIBITED={terminate:{label:'Automatic Termination',reason:'Prohibited — termination requires HR management approval with legal review. The agent cannot fire anyone.'},salary_change:{label:'Automatic Salary Change',reason:'Prohibited — salary modifications require dual HR + Finance approval with written justification.'},promote:{label:'Automatic Promotion',reason:'Prohibited — promotions require performance review and management sign-off.'}};
+
+const state={audit:[],seq:0,stats:{events:0,auto:0,holds:0,blocked:0},parts:{},orders:[],abcClass:{},pendingFactory:[],scada:{},erp:{},crm:{},rag:{},cmms:{},hr:{}};
+
+function initData(){state.parts=JSON.parse(JSON.stringify(PARTS0));state.orders=JSON.parse(JSON.stringify(ORDERS0));state.abcClass={'BRG-6205':'A','COUPLING-01':'A','SEAL-MECH-22':'B','OIL-ISO46':'C'};state.pendingFactory=[];state.scada=JSON.parse(JSON.stringify(SCADA0));state.erp=JSON.parse(JSON.stringify(ERP0));state.crm=JSON.parse(JSON.stringify(CRM0));state.rag=JSON.parse(JSON.stringify(RAG0));state.cmms=JSON.parse(JSON.stringify(CMMS0));state.hr=JSON.parse(JSON.stringify(HR0));}
+function updateStats(){$('st-events').textContent=state.stats.events;$('st-auto').textContent=state.stats.auto;$('st-holds').textContent=state.stats.holds;$('st-blocked').textContent=state.stats.blocked;}
+function logAudit(rec){state.audit.unshift({time:nowTime(),id:'A'+(++state.seq),...rec});renderAudit();updateStats();}
+function renderAudit(){const body=$('audit-body');if(!state.audit.length){body.innerHTML=`<tr><td colspan="8"><div class="es">${icon('clipboard',32)}<p>No log yet — try any scenario.</p></div></td></tr>`;return;}body.innerHTML=state.audit.map(r=>{const cls=r.decision.includes('REJECT')?'bad':r.decision.includes('HOLD')?'warn':(r.decision.includes('EXEC')||r.decision.includes('APPROV'))?'ok':'info';return `<tr><td class="mono">${r.id}</td><td class="mono">${esc(r.time)}</td><td>${esc(r.module||'—')}</td><td>${esc(r.action)}</td><td class="mono">${esc(r.level||'—')}</td><td>${tag(r.decision,cls)}</td><td style="color:var(--tx3)">${esc(r.actor||'—')}</td><td style="color:var(--tx3);font-size:11.5px">${esc(r.note||'')}</td></tr>`;}).join('');}
+document.querySelectorAll('nav.tabs button').forEach(btn=>{btn.addEventListener('click',()=>{const t=btn.dataset.tab;document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active',b===btn));document.querySelectorAll('section[data-tab-content]').forEach(s=>s.classList.toggle('active',s.dataset.tabContent===t));});});
+
+/* FACTORY */
+function renderFactory(){const h=$('factory');h.innerHTML='';Object.entries(MACHINES).forEach(([id,m])=>{const el=document.createElement('div');el.className='mc '+m.v;el.dataset.asset=id;el.innerHTML=`<div class="iw">${icon(m.icon,22)}</div><div class="nm">${esc(m.name)}</div><div class="mt">${esc(id)} · ${esc(m.model)}</div><div class="st">Running</div>`;el.onclick=()=>triggerIncident(id,'high');h.appendChild(el);});}
+function renderPipeline(){const stages=[['edge','Edge Event','Awaiting event'],['diagnosis','Diagnosis','Awaiting event'],['policy','Policy Engine','Awaiting diagnosis'],['execution','Action Gateway','Awaiting decision']];$('pipeline').innerHTML=stages.map(([k,t,l],i)=>`<div class="stage empty-state" data-stage="${k}"><div class="sh"><div class="sn">${i+1}</div><div class="st">${t}</div></div><div class="sc"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:110px;color:var(--tx3);font-size:12px;gap:6px">${icon('inbox',22)}<span>${l}</span></div></div></div>`).join('');}
+function setStage(n,s){const el=document.querySelector(`.stage[data-stage="${n}"]`);if(!el)return;el.classList.remove('active','done','empty-state');if(s)el.classList.add(s);}
+function fillStage(n,h){const el=document.querySelector(`.stage[data-stage="${n}"]`);if(el)el.querySelector('.sc').innerHTML=h;}
+
+async function triggerIncident(asset,mode){
+  renderPipeline();
+  const m=MACHINES[asset],kb=KB[asset];
+  const mEl=document.querySelector(`.mc[data-asset="${asset}"]`);
+  if(mEl){mEl.classList.add('alarm');mEl.querySelector('.st').textContent='Alarm';}
+  state.stats.events++;updateStats();
+  setStage('edge','active');fillStage('edge',`<div class="row">Receiving event ${loading()}</div>`);await sleep(450);
+  let value,quality;
+  if(mode==='bad'){quality='BAD';value=96;}else{quality='GOOD';value=asset==='PUMP-01'?92.4:asset==='MOTOR-02'?8.2:105;}
+  const unit=asset==='PUMP-01'?'degC':asset==='MOTOR-02'?'mm/s':'bar';
+  fillStage('edge',`<div class="row"><strong>${esc(asset)}</strong> · ${esc(m.signal)}</div><div class="row">Value: <strong>${value} ${unit}</strong></div><div class="row">Quality: ${quality==='GOOD'?tag('GOOD','ok'):tag(quality,'bad')}</div>`);
+  setStage('edge','done');
+  logAudit({module:'Factory',action:`EVENT ${asset}`,level:'L1',decision:'AUTO_RECEIVED',actor:'edge-gw',note:`${m.signal}=${value} (${quality})`});
+  setStage('diagnosis','active');fillStage('diagnosis',`<div class="row">Diagnosing ${loading()}</div>`);await sleep(500);
+  if(quality!=='GOOD'){setStage('diagnosis','done');fillStage('diagnosis',`<div class="row">${tag('ABSTAIN','warn')}</div><div class="row" style="color:var(--tx3)">BAD reading — no decision.</div>`);logAudit({module:'Factory',action:'Diagnosis',level:'L2',decision:'HOLD',actor:'maintenance',note:'BAD reading'});setStage('policy','done');fillStage('policy','<div class="row" style="color:var(--tx3)">No decisions.</div>');setStage('execution','done');fillStage('execution','<div class="row" style="color:var(--tx3)">No execution.</div>');if(mEl){mEl.classList.remove('alarm');mEl.classList.add('processing');mEl.querySelector('.st').textContent='Human Review';}return;}
+  if(!kb.rule(value)){setStage('diagnosis','done');fillStage('diagnosis',`<div class="row">${tag('ABSTAIN','warn')}</div><div class="row" style="color:var(--tx3)">Value below threshold.</div>`);logAudit({module:'Factory',action:'Diagnosis',level:'L2',decision:'HOLD',actor:'maintenance',note:'Below threshold'});setStage('policy','done');fillStage('policy','<div class="row" style="color:var(--tx3)">No decisions.</div>');setStage('execution','done');fillStage('execution','<div class="row" style="color:var(--tx3)">No execution.</div>');if(mEl){mEl.classList.remove('alarm');mEl.querySelector('.st').textContent='Running';}return;}
+  setStage('diagnosis','done');
+  fillStage('diagnosis',`<div class="row">${tag('GROUNDED','ok')}</div><div class="row" style="margin-top:4px"><strong>${esc(kb.hyp)}</strong></div><div class="quote"><div class="src">${icon('book-open',11)} ${esc(kb.doc_id)}</div>${esc(kb.quote)}</div><div class="row" style="font-size:11px;color:var(--tx3)">Part: <strong style="color:var(--tx2)">${esc(kb.part)}</strong> · ETA: ${kb.eta} min</div>`);
+  logAudit({module:'Factory',action:'Diagnosis',level:'L2',decision:'GROUNDED',actor:'maintenance',note:kb.doc_id});
+  setStage('policy','active');fillStage('policy',`<div class="row">Evaluating ${loading()}</div>`);await sleep(450);
+  const inv=state.parts[kb.part];const avail=inv&&inv.stock>0;
+  const actions=[{id:'notify',label:'Notify Maintenance Supervisor',level:'L1',decision:'AUTO'},{id:'cmms',label:'Draft CMMS Work Order',level:'L2',decision:'HOLD'},avail?{id:'reserve',label:`Reserve ${kb.part}`,level:'L2',decision:'HOLD'}:{id:'req',label:`Requisition ${kb.part}`,level:'L2',decision:'HOLD'}];
+  state.pendingFactory=actions.filter(a=>a.decision==='HOLD');
+  fillStage('policy',actions.map(a=>`<div class="row" style="justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--bd);width:100%"><div><div style="font-size:11.5px">${esc(a.label)}</div><div style="font-size:10px;color:var(--tx3);font-family:var(--mo)">${a.level}</div></div><div>${a.decision==='AUTO'?tag('AUTO','primary'):tag('HOLD','warn')}</div></div>`).join(''));
+  actions.forEach(a=>{if(a.decision==='HOLD')state.stats.holds++;logAudit({module:'Factory',action:a.label,level:a.level,decision:a.decision==='AUTO'?'APPROVED_AUTO':'HOLD',actor:'policy-engine',note:a.decision==='AUTO'?'Within cap':'Requires approval'});});
+  setStage('policy','done');
+  setStage('execution','active');fillStage('execution',`<div class="row">Executing ${loading()}</div>`);await sleep(400);
+  state.stats.auto++;
+  fillStage('execution',`<div class="row">${tag('AUTO · L1','primary')}</div><div class="row" style="color:var(--ok);font-size:11.5px">${icon('check',11)} Supervisor notified</div>${state.pendingFactory.map(a=>`<div class="row" style="color:var(--wn);font-size:11.5px">${icon('pause',11)} ${esc(a.label)}</div>`).join('')}<div class="row" style="margin-top:10px;gap:6px"><button class="btn btn-sm btn-ok" onclick="approveAllFactory()">${icon('check',12)} Approve All</button><button class="btn btn-sm btn-bad" onclick="rejectAllFactory()">${icon('x',12)} Reject</button></div>`);
+  logAudit({module:'Factory',action:'Notification',level:'L1',decision:'AUTO_EXECUTED',actor:'gateway',note:'Supervisor notified'});
+  setStage('execution','done');
+  if(mEl){mEl.classList.remove('alarm');mEl.classList.add('processing');mEl.querySelector('.st').textContent='Awaiting Approval';}
+}
+function approveAllFactory(){state.pendingFactory.forEach(a=>{state.stats.auto++;logAudit({module:'Factory',action:a.label,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human'});});fillStage('execution',`<div class="row">${tag('APPROVED','ok')}</div><div class="row" style="color:var(--tx3)">${state.pendingFactory.length} actions executed.</div>`);state.pendingFactory=[];document.querySelectorAll('.mc').forEach(m=>{if(m.querySelector('.st').textContent==='Awaiting Approval')m.querySelector('.st').textContent='In Progress';});}
+function rejectAllFactory(){state.pendingFactory.forEach(a=>logAudit({module:'Factory',action:a.label,level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'}));fillStage('execution',`<div class="row">${tag('REJECTED','bad')}</div><div class="row" style="color:var(--tx3)">${state.pendingFactory.length} actions rejected.</div>`);state.pendingFactory=[];}
+
+/* SCADA */
+function renderScada(){const tbody=document.querySelector('#scada-signals tbody');tbody.innerHTML='';state.scada.signals.forEach(s=>{const trendIcon=s.trend==='up'?icon('trending-up',12):s.trend==='down'?icon('trending-down',12):icon('minus',12);const trendColor=s.trend==='up'?'var(--dn)':s.trend==='down'?'var(--wn)':'var(--tx3)';const stCls=s.status==='HIGH'?'bad':s.status==='LOW'?'warn':'ok';tbody.innerHTML+=`<tr><td class="mono">${esc(s.tag)}</td><td><b>${s.value}</b> <span class="mono">${esc(s.unit)}</span></td><td><span class="qd ${s.quality.toLowerCase()}"></span>${esc(s.quality)}</td><td>${tag(s.status,stCls)}</td><td style="color:${trendColor}">${trendIcon}</td></tr>`;});const ab=document.querySelector('#scada-alarms tbody');ab.innerHTML='';state.scada.alarms.forEach(a=>{const sev=a.severity==='HIGH'?'bad':a.severity==='MEDIUM'?'warn':'ok';ab.innerHTML+=`<tr><td class="mono">${esc(a.id)}</td><td class="mono">${esc(a.tag)}</td><td>${tag(a.severity,sev)}</td><td class="mono">${esc(a.time)}</td><td>${tag(a.state,'info')}</td></tr>`;});$('scada-alarm-count').textContent=state.scada.alarms.length;$('scada-raw-count').textContent=state.scada.rawCount;}
+async function scadaDedupe(){const r=$('scada-result');r.innerHTML=`<div class="es">${icon('radio',24)}<p>Analyzing ${loading()}</p></div>`;await sleep(600);state.stats.events++;logAudit({module:'SCADA',action:'Alarm flood analysis',level:'L1',decision:'AUTO_ANALYSIS',actor:'edge-filter',note:`raw=${state.scada.rawCount}`});await sleep(400);state.stats.auto++;logAudit({module:'SCADA',action:'Deduplicate alarms',level:'L1',decision:'AUTO_EXECUTED',actor:'edge-filter',note:'12 → 3 (75% reduction)'});r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Ingest raw stream</div><div>${tag('12 raw/min','info')}</div></div><div class="fs"><div><span class="num">2</span> Deadband + debounce</div><div>${tag('-4 noise','ok')}</div></div><div class="fs"><div><span class="num">3</span> Deduplicate</div><div>${tag('-3 dup','ok')}</div></div><div class="fs"><div><span class="num">4</span> Correlate</div><div>${tag('-2 children','ok')}</div></div><div class="fs"><div><b>Result: 3 root events</b></div><div>${tag('75% reduction','ok')}</div></div></div>`;}
+function scadaAttemptWrite(){state.stats.blocked++;updateStats();$('scada-result').innerHTML=`<div class="sr show"><div class="hd">${icon('ban',14)} REJECT — SCADA Write</div><div class="rs">Prohibited: OPC UA subscription with <b>read-only permissions</b>. No write path exists.</div><div class="ft">Deterministic — independent of model confidence.</div></div>`;logAudit({module:'SCADA',action:'Attempt SCADA write',level:'L3',decision:'REJECT_PROHIBITED',actor:'policy-engine',note:'No write path' });}
+
+/* ERP */
+function renderErp(){const ct=document.querySelector('#erp-costs tbody');ct.innerHTML='';state.erp.costs.forEach(c=>{const pct=Math.round((c.spent/c.budget)*100);const barCls=pct>=90?'danger':pct>=75?'warn':'';const stTag=pct>=90?tag('Over','bad'):pct>=75?tag('Watch','warn'):tag('Healthy','ok');ct.innerHTML+=`<tr><td class="mono">${esc(c.code)}</td><td>${esc(c.name)}</td><td>$${fmt(c.budget)}</td><td>$${fmt(c.spent)}</td><td><div style="font-family:var(--mo);font-size:11px">${pct}%</div><div class="bbar"><div class="${barCls}" style="width:${pct}%"></div></div></td><td>${stTag}</td></tr>`;});const jt=document.querySelector('#erp-journal tbody');if(!state.erp.journal.length){jt.innerHTML=`<tr><td colspan="5"><div class="es" style="padding:16px">${icon('dollar',22)}<p>No entries yet.</p></div></td></tr>`;}else{jt.innerHTML='';state.erp.journal.forEach(j=>{const stTag=j.status==='DRAFT'?tag('Draft','warn'):tag('Posted','ok');jt.innerHTML+=`<tr><td class="mono">${esc(j.id)}</td><td class="mono">${esc(j.cc)}</td><td><b>$${fmt(j.amount)}</b></td><td>${esc(j.desc)}</td><td>${stTag}</td></tr>`;});}}
+async function erpProcessBooking(){const r=$('erp-result');r.innerHTML=`<div class="es">${icon('dollar',24)}<p>Reading CC ${loading()}</p></div>`;await sleep(500);state.stats.events++;logAudit({module:'ERP',action:'Read cost center',level:'L1',decision:'AUTO_ANALYSIS',actor:'finance-agent',note:'CC-MNT-01'});await sleep(400);const cc=state.erp.costs.find(c=>c.code==='CC-MNT-01');const amount=2500;state.stats.holds++;logAudit({module:'ERP',action:`Draft JE $${fmt(amount)}`,level:'L2',decision:'HOLD',actor:'policy-engine',note:'CC-MNT-01'});r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Read CC-MNT-01</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div>Budget: $${fmt(cc.budget)} · Spent: $${fmt(cc.spent)} · Available: $${fmt(cc.budget-cc.spent)}</div><div>${tag('OK','ok')}</div></div><div class="fs"><div><span class="num">2</span> Draft JE: $${fmt(amount)}</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="erp-approval"><div class="info"><b>Approve JE</b><small>CC-MNT-01 · $${fmt(amount)}</small></div><div class="btns"><button class="btn btn-ok" onclick="erpApprove(${amount})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="erpReject()">${icon('x',12)} Reject</button></div></div>`;}
+function erpApprove(amount){const cc=state.erp.costs.find(c=>c.code==='CC-MNT-01');cc.spent+=amount;state.erp.journal.push({id:'JE-'+(Date.now()%100000),cc:'CC-MNT-01',amount,desc:'Maintenance cost booking',status:'POSTED'});state.stats.auto++;const p=$('erp-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('POSTED','ok');logAudit({module:'ERP',action:'JE posted',level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:`+$${fmt(amount)}`});renderErp();}
+function erpReject(){const p=$('erp-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'ERP',action:'Reject JE',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+
+/* PROCUREMENT */
+function renderPartsTable(){const tbody=document.querySelector('#parts-table tbody');tbody.innerHTML='';Object.entries(state.parts).forEach(([id,p])=>{const status=p.stock===0?'OUT':p.stock<p.min?'LOW':'OK';const stTag=status==='OUT'?tag('OUT','bad'):status==='LOW'?tag('LOW','warn'):tag('OK','ok');const canOrder=status!=='OK';tbody.innerHTML+=`<tr><td class="mono">${esc(id)}</td><td>${esc(p.name)}</td><td><b>${p.stock}</b> ${esc(p.unit)}</td><td>${p.min}</td><td>${stTag}</td><td>${canOrder?`<button class="btn btn-sm" onclick="startProcurement('${id}')">${icon('cart',12)} Create</button>`:`<span class="muted">None</span>`}</td></tr>`;});}
+async function startProcurement(partId){const card=$('proc-result-card'),panel=$('proc-result');card.style.display='block';panel.innerHTML=`<div class="es">${icon('inbox',24)}<p>Analyzing...</p></div>`;await sleep(500);const part=state.parts[partId],supplier=SUPPLIERS[partId];const qty=part.max-part.stock,total=qty*part.price;state.stats.events++;logAudit({module:'Procurement',action:`Analyze ${partId}`,level:'L1',decision:'AUTO_ANALYSIS',actor:'supply-agent',note:`order=${qty}`});await sleep(400);state.stats.auto++;logAudit({module:'Procurement',action:'Draft requisition',level:'L1',decision:'AUTO_EXECUTED',actor:'gateway',note:`${partId} × ${qty}`});await sleep(400);state.stats.holds++;logAudit({module:'Procurement',action:'Issue PO',level:'L2',decision:'HOLD',actor:'policy-engine',note:'Requires approval'});panel.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Analyze stock</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div><span class="num">2</span> Draft requisition (${esc(partId)} × ${qty})</div><div>${tag('EXECUTED','ok')}</div></div><div class="fs"><div><span class="num">3</span> Issue PO — ${esc(supplier.name)}</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="po-approval"><div class="info"><b>Proposed PO</b><small>${esc(part.name)} · ${qty} ${part.unit} · $${fmt(total)} · Lead: ${supplier.lead}d</small></div><div class="btns"><button class="btn btn-ok" onclick="approvePO('${partId}',${qty})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="rejectPO('${partId}')">${icon('x',12)} Reject</button></div></div>`;}
+function approvePO(partId,qty){const p=$('po-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('PO ISSUED','ok');state.parts[partId].stock+=qty;state.stats.auto++;logAudit({module:'Procurement',action:'PO approved',level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:`${partId} × ${qty}`});renderPartsTable();renderAbcTable();}
+function rejectPO(partId){const p=$('po-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'Procurement',action:'PO rejected',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human',note:partId});}
+
+/* SALES */
+function renderSalesTable(){const tbody=document.querySelector('#sales-table tbody');tbody.innerHTML='';state.orders.forEach((o,idx)=>{const stTag=o.status==='PENDING'?tag('Pending','warn'):o.status==='READY'?tag('Ready to Ship','ok'):o.status==='SPLIT'?tag('Partial','info'):tag(o.status,'info');tbody.innerHTML+=`<tr><td class="mono">${esc(o.id)}</td><td>${esc(o.customer)}</td><td>${esc(PRODS[o.product].name)}</td><td><b>${o.qty}</b></td><td class="mono">${esc(o.due)}</td><td>${stTag}</td><td>${o.status==='PENDING'?`<button class="btn btn-sm" onclick="processOrder(${idx})">${icon('play',11)} Process</button>`:`<span class="muted">Done</span>`}</td></tr>`;});}
+async function processOrder(idx){const order=state.orders[idx],product=PRODS[order.product];const card=$('sales-result-card'),panel=$('sales-result');card.style.display='block';panel.innerHTML=`<div class="es">${icon('inbox',24)}<p>Checking ${loading()}</p></div>`;await sleep(500);state.stats.events++;logAudit({module:'Sales',action:`Check ${order.id}`,level:'L1',decision:'AUTO_ANALYSIS',actor:'sales-agent',note:`${order.qty} × ${order.product}`});await sleep(400);const avail=product.stock>=order.qty;if(avail){state.stats.holds++;logAudit({module:'Sales',action:'Propose delivery',level:'L2',decision:'HOLD',actor:'policy-engine',note:'Requires approval'});panel.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Check stock</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div>Stock: ${product.stock} · Required: ${order.qty}</div><div>${tag('AVAILABLE','ok')}</div></div><div class="fs"><div><span class="num">2</span> Delivery order</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="so-approval"><div class="info"><b>Approve Full Delivery</b><small>${esc(order.id)} · ${order.qty} × ${esc(product.name)}</small></div><div class="btns"><button class="btn btn-ok" onclick="approveFull(${idx})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="rejectOrder(${idx})">${icon('x',12)} Reject</button></div></div>`;}else{const partial=product.stock;state.stats.holds++;logAudit({module:'Sales',action:'Partial delivery',level:'L2',decision:'HOLD',actor:'policy-engine',note:`shortfall ${order.qty-partial}`});panel.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Check stock</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div>Stock: ${product.stock} · Required: ${order.qty}</div><div>${tag('SHORT','warn')}</div></div><div class="fs"><div><span class="num">2</span> Partial + backorder</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="so-approval"><div class="info"><b>Approve Partial</b><small>Deliver ${partial} now + ${order.qty-partial} backorder</small></div><div class="btns"><button class="btn btn-ok" onclick="approvePartial(${idx})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="rejectOrder(${idx})">${icon('x',12)} Reject</button></div></div>`;}}
+function approveFull(idx){const order=state.orders[idx],product=PRODS[order.product];product.stock-=order.qty;order.status='READY';state.stats.auto++;const p=$('so-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('CONFIRMED','ok');logAudit({module:'Sales',action:`Deliver ${order.id}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human'});renderSalesTable();}
+function approvePartial(idx){const order=state.orders[idx],product=PRODS[order.product];const delivered=product.stock;product.stock=0;order.status='SPLIT';state.stats.auto++;const p=$('so-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('PARTIAL','ok');logAudit({module:'Sales',action:`Partial ${order.id}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human'});renderSalesTable();}
+function rejectOrder(idx){const p=$('so-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'Sales',action:'Reject order',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+
+/* CRM */
+function renderCrm(){const ct=document.querySelector('#crm-customers tbody');ct.innerHTML='';state.crm.customers.forEach(c=>{const hd=c.health==='GREEN'?'green':c.health==='AMBER'?'amber':'red';ct.innerHTML+=`<tr><td><b>${esc(c.name)}</b><div class="mono" style="color:var(--tx3);font-size:11px">${esc(c.id)}</div></td><td>${esc(c.segment)}</td><td><span class="hd ${hd}"></span>${esc(c.health)}</td><td>${c.openOrders}</td><td>$${fmt(c.ytd)}</td></tr>`;});const it=document.querySelector('#crm-interactions tbody');it.innerHTML='';state.crm.interactions.forEach(i=>{const stTag=i.status==='OPEN'?tag('Open','warn'):tag('Closed','ok');it.innerHTML+=`<tr><td class="mono">${esc(i.id)}</td><td class="mono">${esc(i.customer)}</td><td>${esc(i.type)}</td><td>${esc(i.summary)}</td><td>${stTag}</td></tr>`;});}
+async function crmDraftResponse(){const r=$('crm-result');r.innerHTML=`<div class="es">${icon('mail',24)}<p>Reading context ${loading()}</p></div>`;await sleep(500);state.stats.events++;logAudit({module:'CRM',action:'Read customer context',level:'L1',decision:'AUTO_ANALYSIS',actor:'sales-agent',note:'CUST-101'});await sleep(400);state.stats.holds++;logAudit({module:'CRM',action:'Draft response',level:'L2',decision:'HOLD',actor:'policy-engine',note:'Requires approval'});r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Read order history + tickets</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div><span class="num">2</span> Draft contextual response</div><div>${tag('HOLD','warn')}</div></div></div><div style="background:var(--sa);border-radius:8px;padding:14px;margin-top:10px;font-size:12.5px;color:var(--tx2);line-height:1.6"><b style="color:var(--tx);display:block;margin-bottom:6px">Draft reply to CUST-101</b>"Dear Nile Industrial Group, we sincerely apologize for the delayed shipment. We have prioritized your next delivery and expect it to leave our facility within 48 hours. A dedicated account manager will follow up with tracking details."</div><div class="ap" id="crm-approval"><div class="info"><b>Send response</b><small>To CUST-101 · Nile Industrial Group</small></div><div class="btns"><button class="btn btn-ok" onclick="crmApprove()">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="crmReject()">${icon('x',12)} Reject</button></div></div>`;}
+function crmApprove(){const p=$('crm-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('SENT','ok');state.stats.auto++;logAudit({module:'CRM',action:'Send response',level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:'CUST-101'});}
+function crmReject(){const p=$('crm-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'CRM',action:'Reject response',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+
+/* HR */
+function renderHr(){
+  const tbody=document.querySelector('#hr-employees tbody');tbody.innerHTML='';
+  const active=state.hr.employees.filter(e=>e.status==='ACTIVE');
+  const payroll=active.reduce((s,e)=>s+e.salary,0);
+  const depts=new Set(state.hr.employees.map(e=>e.dept));
+  $('hr-headcount').textContent=active.length;
+  $('hr-payroll-total').textContent='$'+fmt(payroll);
+  $('hr-depts').textContent=depts.size;
+  $('hr-drafts').textContent=state.hr.drafts.length;
+  $('hr-count').textContent=active.length;
+  if(!state.hr.employees.length){tbody.innerHTML=`<tr><td colspan="9"><div class="es">${icon('users',24)}<p>No employees.</p></div></td></tr>`;return;}
+  state.hr.employees.forEach(e=>{
+    const stTag=e.status==='ACTIVE'?tag('Active','ok'):e.status==='ON_LEAVE'?tag('On Leave','warn'):tag(e.status,'info');
+    const ratingHtml=e.rating?`<span style="color:var(--wn);font-family:var(--mo)">${e.rating.toFixed(1)}</span>`:'—';
+    let action='';
+    if(e.status==='ACTIVE')action=`<button class="btn btn-sm" onclick="hrRequestLeave('${e.id}')">${icon('inbox',11)} Leave</button>`;
+    else if(e.status==='ON_LEAVE')action=`<button class="btn btn-sm" onclick="hrReturnFromLeave('${e.id}')">${icon('check',11)} Return</button>`;
+    else action=`<span class="muted">—</span>`;
+    tbody.innerHTML+=`<tr><td class="mono">${esc(e.id)}</td><td><b>${esc(e.name)}</b></td><td>${esc(e.role)}</td><td class="mono">${esc(e.dept)}</td><td class="mono">${esc(e.hired)}</td><td>$${fmt(e.salary)}</td><td>${ratingHtml}</td><td>${stTag}</td><td>${action}</td></tr>`;
+  });
+}
+async function hrOpenHiring(){
+  const r=$('hr-result');r.innerHTML=`<div class="es">${icon('user',24)}<p>Preparing hiring draft ${loading()}</p></div>`;await sleep(500);
+  state.stats.events++;
+  logAudit({module:'HR',action:'Screen candidate',level:'L1',decision:'AUTO_ANALYSIS',actor:'hr-agent',note:'Jordan Rivera'});
+  await sleep(400);
+  const draft={id:'EMP-'+(1008+state.hr.drafts.length),name:'Jordan Rivera',role:'Maintenance Engineer',dept:'Maintenance',hired:new Date().toISOString().slice(0,10),salary:8200,status:'DRAFT',rating:null};
+  state.hr.drafts.push(draft);
+  state.stats.holds++;
+  logAudit({module:'HR',action:`Draft hire ${draft.id}`,level:'L2',decision:'HOLD',actor:'policy-engine',note:`${draft.name} · $${fmt(draft.salary)}`});
+  renderHr();
+  r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Screen candidate</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div><span class="num">2</span> Draft hire — ${esc(draft.role)} · $${fmt(draft.salary)}</div><div>${tag('DRAFT','ok')}</div></div><div class="fs"><div><span class="num">3</span> HR manager approval</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="hire-approval"><div class="info"><b>Approve Hire — ${esc(draft.name)}</b><small>${esc(draft.role)} · $${fmt(draft.salary)}/mo</small></div><div class="btns"><button class="btn btn-ok" onclick="hrApproveHire('${draft.id}')">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="hrRejectHire('${draft.id}')">${icon('x',12)} Reject</button></div></div>`;
+}
+function hrApproveHire(draftId){const idx=state.hr.drafts.findIndex(d=>d.id===draftId);if(idx<0)return;const draft=state.hr.drafts[idx];draft.status='ACTIVE';state.hr.employees.push(draft);state.hr.drafts.splice(idx,1);state.stats.auto++;const p=$('hire-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('HIRED','ok');logAudit({module:'HR',action:`Hire approved ${draftId}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:draft.name});renderHr();}
+function hrRejectHire(draftId){const idx=state.hr.drafts.findIndex(d=>d.id===draftId);if(idx<0)return;const draft=state.hr.drafts[idx];state.hr.drafts.splice(idx,1);const p=$('hire-approval');if(p){p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');}logAudit({module:'HR',action:`Hire rejected ${draftId}`,level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human',note:draft.name});renderHr();}
+async function hrCalculatePayroll(){
+  const r=$('hr-result');r.innerHTML=`<div class="es">${icon('dollar',24)}<p>Calculating ${loading()}</p></div>`;await sleep(500);
+  const active=state.hr.employees.filter(e=>e.status==='ACTIVE');
+  const gross=active.reduce((s,e)=>s+e.salary,0);
+  const deductions=Math.round(gross*0.15);
+  const net=gross-deductions;
+  state.stats.events++;
+  logAudit({module:'HR',action:'Calculate payroll',level:'L1',decision:'AUTO_ANALYSIS',actor:'hr-agent',note:`${active.length} emp · gross $${fmt(gross)}`});
+  await sleep(400);
+  state.stats.holds++;
+  logAudit({module:'HR',action:'Draft payroll',level:'L2',decision:'HOLD',actor:'policy-engine',note:`net $${fmt(net)}`});
+  r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Collect data</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div>${active.length} active · Gross: $${fmt(gross)} · Deductions: $${fmt(deductions)}</div><div>${tag('CALCULATED','ok')}</div></div><div class="fs"><div><span class="num">2</span> Draft payment <b>$${fmt(net)}</b> net</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="payroll-approval"><div class="info"><b>Approve Payroll Run</b><small>${active.length} employees · Net $${fmt(net)}</small></div><div class="btns"><button class="btn btn-ok" onclick="hrApprovePayroll(${net},${active.length})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="hrRejectPayroll()">${icon('x',12)} Reject</button></div></div>`;
+}
+function hrApprovePayroll(net,count){state.stats.auto++;const p=$('payroll-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('PAID','ok');logAudit({module:'HR',action:'Payroll posted',level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:`${count} emp · $${fmt(net)}`});}
+function hrRejectPayroll(){const p=$('payroll-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'HR',action:'Reject payroll',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+async function hrRequestLeave(empId){
+  const emp=state.hr.employees.find(e=>e.id===empId);if(!emp)return;
+  const r=$('hr-result');r.innerHTML=`<div class="es">${icon('inbox',24)}<p>Checking leave policy ${loading()}</p></div>`;await sleep(500);
+  state.stats.events++;
+  logAudit({module:'HR',action:`Leave request ${empId}`,level:'L1',decision:'AUTO_ANALYSIS',actor:'hr-agent',note:emp.name});
+  await sleep(400);
+  state.stats.holds++;
+  logAudit({module:'HR',action:'Approve leave',level:'L2',decision:'HOLD',actor:'policy-engine',note:`${emp.name} · 5 days`});
+  r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Verify balance</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div>${esc(emp.name)} · 12 days balance · 5 requested</div><div>${tag('WITHIN POLICY','ok')}</div></div><div class="fs"><div><span class="num">2</span> Manager approval</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="leave-approval"><div class="info"><b>Approve Leave — ${esc(emp.name)}</b><small>5 working days · ${esc(emp.role)}</small></div><div class="btns"><button class="btn btn-ok" onclick="hrApproveLeave('${empId}')">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="hrRejectLeave()">${icon('x',12)} Reject</button></div></div>`;
+}
+function hrApproveLeave(empId){const emp=state.hr.employees.find(e=>e.id===empId);if(!emp)return;emp.status='ON_LEAVE';state.stats.auto++;const p=$('leave-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('APPROVED','ok');logAudit({module:'HR',action:`Leave approved ${empId}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:emp.name});renderHr();}
+function hrRejectLeave(){const p=$('leave-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'HR',action:'Reject leave',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+function hrReturnFromLeave(empId){const emp=state.hr.employees.find(e=>e.id===empId);if(!emp)return;emp.status='ACTIVE';logAudit({module:'HR',action:`Return from leave ${empId}`,level:'L1',decision:'AUTO_EXECUTED',actor:'hr-agent',note:emp.name});renderHr();}
+function hrAttemptProhibited(type){const p=HR_PROHIBITED[type];if(!p)return;state.stats.blocked++;updateStats();const box=$('hr-prohibited-result');box.classList.add('show');box.innerHTML=`<div class="hd">${icon('ban',14)} REJECT — ${esc(p.label)}</div><div class="rs">${esc(p.reason)}</div><div class="ft">Deterministic from Policy Engine — independent of model confidence.</div>`;logAudit({module:'HR',action:type,level:'L3',decision:'REJECT_PROHIBITED',actor:'policy-engine',note:p.reason});}
+
+/* INVENTORY */
+function renderAbcTable(){const tbody=$('abc-table-body');tbody.innerHTML='';Object.entries(state.parts).forEach(([id,p])=>{const val=p.stock*p.price;const cls=state.abcClass[id];const clsTag=cls==='A'?tag('A · Critical','bad'):cls==='B'?tag('B · Medium','warn'):tag('C · Normal','ok');tbody.innerHTML+=`<tr><td class="mono">${esc(id)}</td><td>${esc(p.name)}</td><td><b>${p.stock}</b> ${esc(p.unit)}</td><td>$${fmt(val)}</td><td>${clsTag}</td><td class="mono">${esc(p.wh)}</td></tr>`;});}
+async function startCycleCount(){const r=$('inv-result');r.innerHTML=`<div class="es">${icon('inbox',24)}<p>Selecting ${loading()}</p></div>`;await sleep(500);const parts=Object.keys(state.parts);const id=parts[Math.floor(Math.random()*parts.length)];const part=state.parts[id];const sysQty=part.stock;const actQty=Math.max(0,sysQty-Math.floor(Math.random()*3)-(sysQty>0?1:0));const diff=actQty-sysQty;state.stats.events++;logAudit({module:'Inventory',action:`Cycle count ${id}`,level:'L1',decision:'AUTO_ANALYSIS',actor:'inventory-agent',note:`diff=${diff}`});await sleep(400);if(diff===0){r.innerHTML=`<div class="fp"><div class="fs"><div>Count: ${esc(id)} — no discrepancies</div><div>${tag('OK','ok')}</div></div></div>`;return;}state.stats.holds++;logAudit({module:'Inventory',action:'Propose adjustment',level:'L2',decision:'HOLD',actor:'policy-engine',note:`${diff} ${part.unit}`});r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Count ${esc(id)}</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div>System: ${sysQty} · Actual: ${actQty}</div><div>${tag('DIFF '+diff,'bad')}</div></div><div class="fs"><div><span class="num">2</span> Adjustment</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="inv-approval"><div class="info"><b>Approve Adjustment</b><small>${esc(part.name)} · ${sysQty} → ${actQty}</small></div><div class="btns"><button class="btn btn-ok" onclick="approveAdjustment('${id}',${actQty})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="rejectAdjustment()">${icon('x',12)} Reject</button></div></div>`;}
+function approveAdjustment(id,newQty){state.parts[id].stock=newQty;state.stats.auto++;const p=$('inv-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('ADJUSTED','ok');logAudit({module:'Inventory',action:`Adjust ${id}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:`stock=${newQty}`});renderAbcTable();renderPartsTable();}
+function rejectAdjustment(){const p=$('inv-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'Inventory',action:'Reject adjustment',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+async function startTransfer(){const r=$('inv-result');r.innerHTML=`<div class="es">${icon('inbox',24)}<p>Proposing ${loading()}</p></div>`;await sleep(500);const id='OIL-ISO46',part=state.parts[id];const qty=Math.floor(part.stock/2);state.stats.events++;logAudit({module:'Inventory',action:`Transfer proposal ${id}`,level:'L1',decision:'AUTO_ANALYSIS',actor:'inventory-agent',note:`${qty} WH-A → WH-B`});state.stats.holds++;logAudit({module:'Inventory',action:'Transfer approval',level:'L2',decision:'HOLD',actor:'policy-engine'});r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Analyze distribution</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div><span class="num">2</span> Transfer ${qty} ${esc(part.unit)} WH-A → WH-B</div><div>${tag('HOLD','warn')}</div></div></div><div class="ap" id="inv-approval"><div class="info"><b>Approve Transfer</b><small>${esc(part.name)} · ${qty} ${esc(part.unit)}</small></div><div class="btns"><button class="btn btn-ok" onclick="approveTransfer('${id}',${qty})">${icon('check',12)} Approve</button><button class="btn btn-bad" onclick="rejectTransfer()">${icon('x',12)} Reject</button></div></div>`;}
+function approveTransfer(id,qty){state.stats.auto++;const p=$('inv-approval');p.classList.add('approved');p.querySelector('.btns').innerHTML=tag('TRANSFERRED','ok');logAudit({module:'Inventory',action:`Transfer ${id}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human',note:`${qty} WH-A → WH-B`});}
+function rejectTransfer(){const p=$('inv-approval');p.classList.add('rejected');p.querySelector('.btns').innerHTML=tag('REJECTED','bad');logAudit({module:'Inventory',action:'Reject transfer',level:'L2',decision:'REJECTED_BY_HUMAN',actor:'human'});}
+
+/* RAG */
+function renderRag(){const tbody=document.querySelector('#rag-docs tbody');tbody.innerHTML='';state.rag.docs.forEach(d=>{const stTag=d.status==='ACTIVE'?tag('ACTIVE','ok'):d.status==='SUPERSEDED'?tag('SUPERSEDED','bad'):tag(d.status,'warn');tbody.innerHTML+=`<tr><td class="mono">${esc(d.id)}</td><td>${esc(d.title)}</td><td class="mono">${esc(d.ac)}</td><td>${stTag}</td><td class="mono">${esc(d.eff||'—')}</td><td>${d.claims}</td></tr>`;});}
+async function ragSearch(query){if(!query||!query.trim())return;const r=$('rag-result');r.innerHTML=`<div class="es">${icon('search',24)}<p>Searching "${esc(query)}" ${loading()}</p></div>`;await sleep(700);state.stats.events++;logAudit({module:'RAG',action:'Search',level:'L1',decision:'AUTO_ANALYSIS',actor:'retrieval',note:query});const q=query.toLowerCase();let matched=null;if(q.includes('p-200')||q.includes('bearing'))matched=state.rag.docs.find(d=>d.id==='DOC-PUMP-BRG-01');else if(q.includes('m-100')||q.includes('vibration'))matched=state.rag.docs.find(d=>d.id==='DOC-MOTOR-VIB-01');else if(q.includes('h-500')||q.includes('hydraulic')||q.includes('press'))matched=state.rag.docs.find(d=>d.id==='DOC-PRESS-HYD-01');await sleep(400);if(!matched||matched.status!=='ACTIVE'){state.stats.holds++;logAudit({module:'RAG',action:'No active source',level:'L2',decision:'HOLD',actor:'retrieval',note:'Abstain'});r.innerHTML=`<div class="rt"><div class="rs2"><div class="sl">1. Query</div><div class="sb2">"${esc(query)}"</div></div><div class="rs2 warn"><div class="sl">2. Pre-filter</div><div class="sb2">Only ACTIVE retained</div></div><div class="rs2"><div class="sl">3. Retrieve</div><div class="sb2">No matching ACTIVE doc</div></div><div class="rs2 bad"><div class="sl">4. Decision</div><div class="sb2">${tag('ABSTAIN','warn')} No active source — human escalation</div></div></div>`;return;}state.stats.auto++;logAudit({module:'RAG',action:'Retrieved + cited',level:'L2',decision:'GROUNDED',actor:'retrieval',note:matched.id});r.innerHTML=`<div class="rt"><div class="rs2"><div class="sl">1. Query</div><div class="sb2">"${esc(query)}"</div></div><div class="rs2"><div class="sl">2. Pre-filter</div><div class="sb2">ACTIVE only (${state.rag.docs.filter(d=>d.status==='ACTIVE').length} candidates)</div></div><div class="rs2"><div class="sl">3. Retrieve</div><div class="sb2">Dense + BM25 → RRF → rerank</div></div><div class="rs2"><div class="sl">4. Top match</div><div class="sb2"><b>${esc(matched.id)}</b> — ${esc(matched.title)}</div></div><div class="rs2 ok"><div class="sl">5. Citation</div><div class="sb2">Verified — quote supported by ACTIVE source</div></div><div class="rs2 ok"><div class="sl">6. Decision</div><div class="sb2">${tag('GROUNDED','ok')} Answer cites ${esc(matched.id)}</div></div></div>`;}
+
+/* CMMS */
+function renderCmms(){
+  const pt=document.querySelector('#cmms-pm tbody');pt.innerHTML='';
+  state.cmms.pm.forEach(p=>{const stTag=p.status==='OVERDUE'?tag('Overdue','bad'):p.status==='DUE_SOON'?tag('Due soon','warn'):tag('OK','ok');pt.innerHTML+=`<tr><td class="mono">${esc(p.asset)}</td><td class="mono">${esc(p.model)}</td><td class="mono">${esc(p.last)}</td><td class="mono">${esc(p.next)}</td><td>${stTag}</td><td>${p.status!=='OK'?`<button class="btn btn-sm" onclick="cmmsDraftPM('${p.asset}')">${icon('file-text',12)} Draft PM</button>`:`<span class="muted">Scheduled</span>`}</td></tr>`;});
+  const wt=document.querySelector('#cmms-work-orders tbody');wt.innerHTML='';
+  const openCount=state.cmms.workOrders.filter(w=>w.status!=='CLOSED').length;
+  $('cmms-wo-count').textContent=openCount;
+  if(!state.cmms.workOrders.length){wt.innerHTML=`<tr><td colspan="7"><div class="es">${icon('wrench',24)}<p>No work orders.</p></div></td></tr>`;return;}
+  state.cmms.workOrders.forEach(w=>{const pCls=w.priority==='P1'?'p1':w.priority==='P2'?'p2':'p3';const stTag=w.status==='DRAFT'?tag('Draft','warn'):w.status==='APPROVED'?tag('Approved','ok'):w.status==='IN_PROGRESS'?tag('In Progress','info'):tag('Closed','ok');let action='';if(w.status==='DRAFT')action=`<button class="btn btn-sm btn-ok" onclick="cmmsApprove('${w.id}')">${icon('check',12)} Approve</button>`;else if(w.status==='APPROVED')action=`<button class="btn btn-sm" onclick="cmmsStart('${w.id}')">${icon('play',12)} Start</button>`;else if(w.status==='IN_PROGRESS')action=`<button class="btn btn-sm btn-ok" onclick="cmmsClose('${w.id}')">${icon('check',12)} Close</button>`;else action=`<span class="muted">Done</span>`;wt.innerHTML+=`<tr><td><div class="mono" style="font-weight:600;color:var(--tx)">${esc(w.id)}</div></td><td class="mono">${esc(w.asset)}</td><td><span class="wp ${pCls}">${esc(w.priority)}</span></td><td>${esc(w.description)}</td><td class="mono">${esc(w.age)}</td><td>${stTag}</td><td>${action}</td></tr>`;});
+}
+async function cmmsDraftFromAlarm(){const r=$('cmms-result');r.innerHTML=`<div class="es">${icon('wrench',24)}<p>Drafting ${loading()}</p></div>`;await sleep(500);state.stats.events++;logAudit({module:'CMMS',action:'Read recent alarm',level:'L1',decision:'AUTO_ANALYSIS',actor:'maintenance-agent',note:'PUMP-01'});await sleep(400);const newWO={id:'WO-'+(7004+Math.floor(Math.random()*99)),asset:'PUMP-01',priority:'P1',description:'Bearing temperature high — replace BRG-6205',age:'0m',status:'DRAFT'};state.cmms.workOrders.push(newWO);state.stats.auto++;logAudit({module:'CMMS',action:`Draft ${newWO.id}`,level:'L1',decision:'AUTO_EXECUTED',actor:'gateway',note:`${newWO.asset} · P1`});renderCmms();r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> Read alarm &amp; history</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div><span class="num">2</span> Draft ${esc(newWO.id)} — ${esc(newWO.asset)} · P1</div><div>${tag('DRAFT','ok')}</div></div><div class="fs"><div><span class="num">3</span> Approve in Work Orders</div><div>${tag('HOLD','warn')}</div></div></div>`;}
+async function cmmsDraftPM(asset){const r=$('cmms-result');r.innerHTML=`<div class="es">${icon('file-text',24)}<p>Drafting PM ${loading()}</p></div>`;await sleep(500);state.stats.events++;logAudit({module:'CMMS',action:`Draft PM ${asset}`,level:'L1',decision:'AUTO_EXECUTED',actor:'maintenance-agent',note:'PM schedule'});const newWO={id:'WO-'+(7004+Math.floor(Math.random()*99)),asset,priority:'P3',description:'Preventive maintenance — scheduled inspection',age:'0m',status:'DRAFT'};state.cmms.workOrders.push(newWO);state.stats.auto++;logAudit({module:'CMMS',action:`Draft ${newWO.id}`,level:'L1',decision:'AUTO_EXECUTED',actor:'gateway',note:`${asset} · P3 PM`});renderCmms();r.innerHTML=`<div class="fp"><div class="fs"><div><span class="num">1</span> PM check</div><div>${tag('AUTO','primary')}</div></div><div class="fs"><div><span class="num">2</span> Draft ${esc(newWO.id)} — ${esc(asset)} · P3</div><div>${tag('DRAFT','ok')}</div></div><div class="fs"><div><span class="num">3</span> Approve in Work Orders</div><div>${tag('HOLD','warn')}</div></div></div>`;}
+function cmmsApprove(id){const wo=state.cmms.workOrders.find(w=>w.id===id);if(!wo)return;wo.status='APPROVED';state.stats.auto++;logAudit({module:'CMMS',action:`Approve ${id}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human'});renderCmms();}
+function cmmsStart(id){const wo=state.cmms.workOrders.find(w=>w.id===id);if(!wo)return;wo.status='IN_PROGRESS';logAudit({module:'CMMS',action:`Start ${id}`,level:'L1',decision:'AUTO_EXECUTED',actor:'technician'});renderCmms();}
+function cmmsClose(id){const wo=state.cmms.workOrders.find(w=>w.id===id);if(!wo)return;wo.status='CLOSED';state.stats.auto++;logAudit({module:'CMMS',action:`Close ${id}`,level:'L2',decision:'EXECUTED_AFTER_APPROVAL',actor:'human'});renderCmms();}
+function cmmsAttemptProhibited(type){const p=CMMS_PROHIBITED[type];if(!p)return;state.stats.blocked++;updateStats();$('cmms-result').innerHTML=`<div class="sr show"><div class="hd">${icon('ban',14)} REJECT — ${esc(p.label)}</div><div class="rs">${esc(p.reason)}</div><div class="ft">Deterministic — independent of model confidence.</div></div>`;logAudit({module:'CMMS',action:type,level:'L3',decision:'REJECT_PROHIBITED',actor:'policy-engine',note:p.reason});}
+
+/* SAFETY */
+function testProhibited(type){const p=PROHIBITED[type];if(!p)return;state.stats.blocked++;updateStats();const box=$('safety-result');box.classList.add('show');box.innerHTML=`<div class="hd">${icon('ban',14)} REJECT — ${esc(p.label)}</div><div class="rs">${esc(p.reason)}</div><div class="ft">Deterministic from Policy Engine — independent of model confidence.</div>`;logAudit({module:'Safety',action:type,level:'L3',decision:'REJECT_PROHIBITED',actor:'policy-engine',note:p.reason});}
+
+/* RESET */
+function resetAll(){
+  state.audit=[];state.seq=0;state.stats={events:0,auto:0,holds:0,blocked:0};
+  initData();
+  renderAudit();updateStats();renderFactory();renderPipeline();
+  renderPartsTable();renderSalesTable();renderAbcTable();
+  renderScada();renderErp();renderCrm();renderHr();renderRag();renderCmms();
+  ['proc-result-card','sales-result-card'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
+  ['inv-result','scada-result','erp-result','crm-result','cmms-result','hr-result'].forEach(id=>{const el=$(id);if(el)el.innerHTML='';});
+  $('safety-result').classList.remove('show');$('safety-result').innerHTML='';
+  $('hr-prohibited-result').classList.remove('show');$('hr-prohibited-result').innerHTML='';
+  $('rag-result').innerHTML=`<div class="es">${icon('search',32)}<p>Run a query to see the retrieval trace.</p></div>`;
+}
+
+/* BOOT */
+initData();
+renderFactory();renderPipeline();
+renderPartsTable();renderSalesTable();renderAbcTable();
+renderScada();renderErp();renderCrm();renderHr();renderRag();renderCmms();
+updateStats();renderAudit();
+</script>
+</body>
+</html>
